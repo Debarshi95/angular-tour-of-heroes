@@ -23,23 +23,37 @@ export class HeroService {
   }
 
   addHero(hero: Hero): Observable<Hero> {
-    console.log(hero, this.httpOptions);
-    return this.httpClient.post<Hero>(
-      this.url + "/heroes",
-      hero,
-      this.httpOptions
-    );
+    return this.httpClient
+      .post<Hero>(`${this.url}/heroes`, hero, this.httpOptions)
+      .pipe(map(hero => hero["data"]));
   }
   getHeroes(): Observable<Hero[]> {
     return this.httpClient
-      .get<Hero[]>(this.url + "/heroes")
+      .get<Hero[]>(`${this.url}/heroes`)
       .pipe(map(heroes => heroes["data"]));
   }
 
   getHero(id: number): Observable<Hero> {
     console.log(this.url);
     return this.httpClient
-      .get<Hero>(this.url + `/heroes/${id}`)
-      .pipe(map(heroes => heroes["data"]));
+      .get<Hero>(`${this.url}/heroes/${id}`)
+      .pipe(map(hero => hero["data"]));
+  }
+
+  updateHero(hero: Hero): Observable<any> {
+    return this.httpClient.put(
+      `${this.url}/heroes/${hero.id}`,
+      hero,
+      this.httpOptions
+    );
+  }
+
+  /** DELETE: delete the hero from the server */
+  deleteHero(hero: Hero | number): Observable<Hero> {
+    const id = typeof hero === "number" ? hero : hero.id;
+    return this.httpClient.delete<Hero>(
+      `${this.url}/heroes/${id}`,
+      this.httpOptions
+    );
   }
 }
